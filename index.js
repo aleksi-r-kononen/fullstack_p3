@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
 
 morgan.token('cnt', function getCnt (req) {
   const body = req.body
@@ -10,6 +11,8 @@ morgan.token('cnt', function getCnt (req) {
   return ""
 })
 
+app.use(express.static('dist'))
+app.use(cors())
 app.use(express.json())
 app.use(morgan(':method :url :status :response-time :cnt'))
 
@@ -60,6 +63,7 @@ app.get('/api/persons', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
+  const removed_lad = people.find(p => p.id === id)
   people = people.filter(p => p.id !== id)
 
   response.status(204).end()
@@ -97,7 +101,7 @@ app.post('/api/persons', (request, response) => {
   response.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
